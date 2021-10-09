@@ -39,13 +39,13 @@ var wordList = []string{"qwerty", "йцукен", "zxvbnm"}
 
 //проверка наличия подстрок subs в строке str
 func censured(str string, subs ...string) bool {
-	notLegal := false
+	censured := false
 	for _, sub := range subs {
 		if strings.Contains(str, sub) {
-			notLegal = true
+			censured = true
 		}
 	}
-	return notLegal
+	return censured
 }
 
 //метод проверки комментария
@@ -53,12 +53,13 @@ func censured(str string, subs ...string) bool {
 func (api *API) cens(w http.ResponseWriter, r *http.Request) {
 	bComment, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("censrv  ReadAll error: %s", err.Error()), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("censrv ReadAll error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
+
 	if censured(string(bComment), wordList...) {
 		http.Error(w, "censrv censured error", http.StatusNotAcceptable)
 		return
 	}
-	w.WriteHeader(http.StatusTeapot)
+	w.WriteHeader(http.StatusOK)
 }
